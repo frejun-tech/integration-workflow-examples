@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FreJun — VoIP via Call-to-VoIP API</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 40px auto; }
+    input, button { display: block; width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; font-size: 14px; }
+    button { background: #4f46e5; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    pre { background: #f3f4f6; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 13px; }
+    .note { background: #fef3c7; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <h2>VoIP Calling — Call-to-VoIP API</h2>
+
+  <div class="note">
+    <strong>Prerequisite:</strong> The caller must already be logged in on a softphone
+    (e.g. Softphone Web SDK, FreJun Chrome Extension, or Dialer Widget).
+    This API only initiates the call — the softphone handles the actual audio session.
+  </div>
+
+  <button id="btn-auth">1. Login with FreJun</button>
+
+  <fieldset id="call-form" disabled>
+    <legend>2. Initiate VoIP call</legend>
+    <input id="agent-id" type="text" placeholder="Agent ID (user_id from Retrieve User API)" />
+    <input id="dstn-number" type="tel" placeholder="Destination number (E.164, e.g. +919876543210)" />
+    <input id="candidate-name" type="text" placeholder="Callee name (optional)" />
+    <input id="virtual-number" type="tel" placeholder="Virtual number (optional)" />
+    <button id="btn-call" type="button">Call</button>
+  </fieldset>
+
+  <pre id="log"></pre>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
