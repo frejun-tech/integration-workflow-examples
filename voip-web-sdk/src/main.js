@@ -5,6 +5,8 @@ import { Softphone } from '@frejun/softphone-web-sdk';
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
 
+// NOTE: In .env, make sure you are prefixing special characters in client secret with a backslash, e.g. if your secret is `abc$123`, set it as `CLIENT_SECRET=abc\$123`
+
 // ── State ─────────────────────────────────────────────────────────────────
 let accessToken = null;
 let softphone   = null;
