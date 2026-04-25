@@ -9,6 +9,7 @@ const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
 
 // ── State ─────────────────────────────────────────────────────────────────
 let accessToken = null;
+let email       = null;
 let softphone   = null;
 let isMuted     = false;
 let isOnHold    = false;
@@ -20,10 +21,15 @@ const $         = (id) => document.getElementById(id);
 // ── Step 1: OAuth ─────────────────────────────────────────────────────────
 const oauth = new FrejunOAuth({ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET });
 
+oauth.on('authCode', (data) => {
+  email = data.email;
+});
+
 oauth.on('tokens', (data) => {
   accessToken = data.access_token;
   log('✓ Authenticated');
   $('phone-section').disabled = false;
+  startSoftphone();
 });
 
 oauth.on('tokensRefreshed', (data) => {
@@ -39,8 +45,7 @@ oauth.on('error', (err) => log('Auth error: ' + err.message));
 $('btn-auth').addEventListener('click', () => oauth.openAuthPopup());
 
 // ── Step 2: Softphone setup ───────────────────────────────────────────────
-$('btn-start').addEventListener('click', async () => {
-  const email = $('user-email').value.trim();
+const startSoftphone = async () => {
   if (!email) { log('Enter your FreJun email first.'); return; }
 
   try {
@@ -103,7 +108,7 @@ $('btn-start').addEventListener('click', async () => {
   } catch (err) {
     log('Softphone error: ' + err.message);
   }
-});
+};
 
 // ── Call controls ─────────────────────────────────────────────────────────
 $('btn-dial').addEventListener('click', async () => {
