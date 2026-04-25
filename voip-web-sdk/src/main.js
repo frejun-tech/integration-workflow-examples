@@ -2,8 +2,8 @@ import { FrejunOAuth } from '@frejun/oauth';
 import { Softphone } from '@frejun/softphone-web-sdk';
 
 // ── Config ────────────────────────────────────────────────────────────────
-const CLIENT_ID     = 'YOUR_CLIENT_ID';
-const CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
 
 // ── State ─────────────────────────────────────────────────────────────────
 let accessToken = null;
