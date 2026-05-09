@@ -2,27 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FreJun — VoIP via Dialer Widget</title>
+  <title>FreJun — VoIP Dialer Widget Example</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 40px auto; }
-    button { display: block; width: 100%; padding: 10px; margin: 8px 0; font-size: 14px; background: #46e578; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .widget-wrapper { position: fixed; bottom: 20px; right: 20px; width: 380px; height: 600px; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.12); display: none; background: #fff; }
-    .widget-wrapper iframe { width: 100%; height: 100%; border: none; }
-    pre { background: #f3f4f6; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 13px; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 560px; margin: 40px auto; padding: 0 16px; color: #1a1a1a; }
+    h2 { margin-bottom: 4px; }
+    h3 { margin: 24px 0 8px; font-size: 15px; color: #374151; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
+
+    /* Buttons */
+    button { display: block; width: 100%; padding: 10px; margin: 6px 0; font-size: 14px; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary   { background: #46e578; }
+    .btn-success   { background: #16a34a; }
+    .btn-danger    { background: #dc2626; }
+    .btn-secondary { background: #6b7280; }
+
+    /* Status badge */
+    .status { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+    .status-idle    { background: #e5e7eb; color: #6b7280; }
+    .status-ok      { background: #dcfce7; color: #166534; }
+    .status-error   { background: #fee2e2; color: #991b1b; }
+    .status-warning { background: #fef9c3; color: #854d0e; }
+
+    /* Form */
+    fieldset { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin: 8px 0; }
+    legend { font-weight: 600; font-size: 13px; }
+    label { display: block; font-size: 12px; color: #6b7280; margin-top: 6px; }
+    input { width: 100%; padding: 6px 8px; margin-top: 2px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; }
+
+    /* Log */
+    #log { background: #f9fafb; border: 1px solid #e5e7eb; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 12px; font-family: "SF Mono", Consolas, monospace; max-height: 260px; overflow-y: auto; }
+
+    /* Widget container */
+    .widget-wrapper { position: fixed; bottom: 20px; right: 20px; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.12); display: none; background: #fff; }
+    .widget-wrapper iframe { width: 100%; height: 100%; border: none}
   </style>
 </head>
 <body>
-  <h2>VoIP Calling — Dialer Widget (iframe)</h2>
-  <p>Embeds FreJun's dialer as an iframe. The widget handles the softphone, call UI, and session management.</p>
+  <h2>VoIP Calling — Dialer Widget</h2>
+  <p>Embeds FreJun's dialer as an <code>&lt;iframe&gt;</code>. Demonstrates <strong>all</strong> outbound and inbound message events documented in the <a href="https://frejun.com/docs/calling/dialer-widget/" target="_blank">Dialer Widget API</a>.</p>
 
-  <button id="btn-auth">1. Login with FreJun</button>
-  <button id="btn-widget" disabled>2. Open Dialer Widget</button>
+  <!-- ───── 1. Authentication ───── -->
+  <h3>1 · Authenticate <span id="auth-status" class="status status-idle">Not Authenticated</span></h3>
+  <button id="btn-auth" class="btn-primary">Login with FreJun (OAuth)</button>
 
-  <pre id="log"></pre>
+  <!-- ───── 2. Widget Lifecycle ───── -->
+  <h3>2 · Widget Lifecycle <span id="widget-status" class="status status-idle">Not Loaded</span></h3>
+  <button id="btn-open" class="btn-success" disabled>Open Dialer Widget</button>
+  <button id="btn-close" class="btn-secondary" disabled>Close / Hide Widget</button>
 
+  <!-- ───── 3. Initiate Outbound Call ───── -->
+  <h3>3 · Initiate Outbound Call</h3>
+  <fieldset>
+    <legend>Call Parameters</legend>
+
+    <label>Candidate Number *
+      <input id="call-number" type="text" placeholder="+91XXXXXXXXXX" />
+    </label>
+    <label>Candidate Name
+      <input id="call-name" type="text" placeholder="Jane Doe (optional)" />
+    </label>
+    <label>Virtual Number
+      <input id="call-vn" type="text" placeholder="+91XXXXXXXXXX (optional)" />
+    </label>
+    <label>Transaction ID
+      <input id="call-txn" type="text" placeholder="Custom metadata (optional)" />
+    </label>
+    <label>Job ID
+      <input id="call-job" type="text" placeholder="Custom metadata (optional)" />
+    </label>
+    <label>Candidate ID
+      <input id="call-cid" type="text" placeholder="Custom metadata (optional)" />
+    </label>
+  </fieldset>
+  <button id="btn-call" class="btn-success" disabled>Initiate Call</button>
+
+  <!-- ───── 4. End Call ───── -->
+  <h3>4 · End Ongoing Call</h3>
+  <button id="btn-end-call" class="btn-danger" disabled>End Call</button>
+
+  <!-- ───── 5. Event Log ───── -->
+  <h3>5 · Event Log</h3>
+  <button id="btn-clear-log" class="btn-secondary">Clear Log</button>
+  <pre id="log">Waiting for events…
+</pre>
+
+  <!-- ───── Dialer iframe ───── -->
   <div class="widget-wrapper" id="widget-wrapper">
-    <iframe id="dialer-iframe"></iframe>
+    <iframe id="dialer-iframe" allow="microphone"></iframe>
   </div>
 
   <script type="module" src="/src/main.js"></script>
