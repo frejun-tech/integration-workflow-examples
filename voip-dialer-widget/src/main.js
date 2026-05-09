@@ -1,9 +1,9 @@
 import { FrejunOAuth } from '@frejun/oauth';
 
 // ── Config ────────────────────────────────────────────────────────────────
-const CLIENT_ID     = 'YOUR_CLIENT_ID';
-const CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
-const WIDGET_BASE   = 'https://product.frejun.com/dialer';
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
+const WIDGET_BASE   = 'https://dialer.frejun.com/';
 
 // ── State ─────────────────────────────────────────────────────────────────
 let accessToken = null;
