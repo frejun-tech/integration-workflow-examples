@@ -1,8 +1,10 @@
 import { FrejunOAuth } from '@frejun/oauth';
 
+// NOTE: API Key Authentication can also be used instead of OAuth (https://frejun.com/docs/#api-key-authentication).
+
 // ── Config ────────────────────────────────────────────────────────────────
-const CLIENT_ID     = 'YOUR_CLIENT_ID';
-const CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
+const CLIENT_ID     = import.meta.env.VITE_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
 const API_BASE      = 'https://api.frejun.com/api/v1';
 
 // ── State ─────────────────────────────────────────────────────────────────
@@ -31,19 +33,32 @@ document.getElementById('btn-auth').addEventListener('click', () => oauth.openAu
 
 // ── Step 2: Initiate VoIP call via API ────────────────────────────────────
 document.getElementById('btn-call').addEventListener('click', async () => {
-  const agentId       = document.getElementById('agent-id').value.trim();
+  const emailId       = document.getElementById('email-id').value.trim();
   const dstnNumber    = document.getElementById('dstn-number').value.trim();
   const candidateName = document.getElementById('candidate-name').value.trim();
   const virtualNumber = document.getElementById('virtual-number').value.trim();
 
-  if (!agentId || !dstnNumber) {
-    log('Please fill in agent ID and destination number.');
+  if (!emailId || !dstnNumber) {
+    log('Please fill in email ID and destination number.');
     return;
   }
 
   log('Initiating VoIP call...');
 
   try {
+    const user_res = await fetch(`${API_BASE}/integrations/user/?email=${encodeURIComponent(emailId)}`, {
+      headers: { 'Authorization': `Bearer ${accessToken}` },
+    });
+
+    if (!user_res.ok) {
+      throw new Error('Failed to retrieve user: ' + (await user_res.text()));
+    }
+
+    const user_data = await user_res.json();
+    const agentId = user_data.data.user_id;
+
+    log(`Retrieved user ID: ${agentId}`);
+
     const res = await fetch(`${API_BASE}/integrations/call-to-voip/`, {
       method: 'POST',
       headers: {
@@ -60,6 +75,7 @@ document.getElementById('btn-call').addEventListener('click', async () => {
 
     const data = await res.json();
     log('Response:\n' + JSON.stringify(data, null, 2));
+    log("Handle the call life cycle events via call status webhook as described in the webhook documentation [https://frejun.com/docs/webhooks/supported-events/#callstatus].");
   } catch (err) {
     log('Call failed: ' + err.message);
   }
