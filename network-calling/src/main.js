@@ -1,8 +1,10 @@
 import { FrejunOAuth } from '@frejun/oauth';
 
+// NOTE: API Key Authentication can also be used instead of OAuth (https://frejun.com/docs/#api-key-authentication).
+
 // ── Config ────────────────────────────────────────────────────────────────
-const CLIENT_ID     = 'YOUR_CLIENT_ID';
-const CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
+const CLIENT_ID     = import.meta.env.VITE_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
 const API_BASE      = 'https://api.frejun.com/api/v1';
 
 // ── State ─────────────────────────────────────────────────────────────────
