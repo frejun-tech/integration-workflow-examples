@@ -3,7 +3,7 @@ import { FrejunOAuth } from '@frejun/oauth';
 // ── Config ────────────────────────────────────────────────────────────────
 const CLIENT_ID     = import.meta.env.VITE_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
-const DIALER_ORIGIN = 'https://dialer.frejun.com';
+const DIALER_ORIGIN = import.meta.env.VITE_DIALER_ORIGIN || 'https://dialer.frejun.com';
 const DIALER_URL    = DIALER_ORIGIN + '/';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
