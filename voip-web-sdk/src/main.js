@@ -116,9 +116,18 @@ $('btn-dial').addEventListener('click', async () => {
   const virtual = $('virtual-number').value.trim() || undefined;
   if (!number) { log('Enter a destination number.'); return; }
 
+  const options = {
+    metadata: {
+      transactionId: $('transaction-id').value.trim(),
+      candidateId:   $('candidate-id').value.trim(),
+      jobId:         $('job-id').value.trim(),
+    },
+  };
+
+  // make call
   try {
     log('Dialling ' + number + '...');
-    await softphone.makeCall(number, virtual);
+    await softphone.makeCall(number, virtual, options);
   } catch (err) {
     log('Dial error: ' + err.message);
   }
